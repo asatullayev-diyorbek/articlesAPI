@@ -12,7 +12,8 @@ class CategoryView(APIView):
                 return Response(
                     {
                         'id': category.id,
-                        'title': category.title
+                        'title': category.title,
+                        'image': category.get_image(),
                     }
                 )
             except:
@@ -23,7 +24,8 @@ class CategoryView(APIView):
             category_list.append(
                 {
                     'id': category.id,
-                    'title': category.title
+                    'title': category.title,
+                    'image': category.get_image(),
                 }
             )
         return Response(category_list)
@@ -39,7 +41,7 @@ class AuthorView(APIView):
                         'id': author.id,
                         'first_name': author.first_name,
                         'last_name': author.last_name,
-                        'image': author.image.url
+                        'image': author.get_image(),
                     }
                 )
             except:
@@ -52,7 +54,7 @@ class AuthorView(APIView):
                     'id': author.id,
                     'first_name': author.first_name,
                     'last_name': author.last_name,
-                    'image': author.image.url
+                    'image': author.get_image(),
                 }
             )
         return Response(author_list)
@@ -74,7 +76,7 @@ class ArticleView(APIView):
                             'id': article.author.id,
                             'first_name': article.author.first_name,
                             'last_name': article.author.last_name,
-                            'image': article.author.image.url
+                            'image': article.author.get_image(),
                         }
                     }
                 )
@@ -95,7 +97,7 @@ class ArticleView(APIView):
                         'id': article.author.id,
                         'first_name': article.author.first_name,
                         'last_name': article.author.last_name,
-                        'image': article.author.image.url
+                        'image': article.author.get_image(),
                     }
                 }
             )
@@ -112,6 +114,7 @@ class CommentView(APIView):
                         'article': {
                             'id': comment.article.id,
                             'title': comment.article.title,
+                            'image': comment.article.get_image(),
                         },
                         'user': {
                             'id': comment.user.id,
@@ -126,3 +129,26 @@ class CommentView(APIView):
                 )
             except:
                 return Response({'message': "Sharx topilmadi"})
+
+        comment_list = []
+        comments = Comment.objects.all()
+        for comment in comments:
+            comment_list.append(
+                {
+                    'article': {
+                        'id': comment.article.id,
+                        'title': comment.article.title,
+                        'image': comment.article.get_image(),
+                    },
+                    'user': {
+                        'id': comment.user.id,
+                        'username': comment.user.username,
+                        'first_name': comment.user.first_name,
+                        'last_name': comment.user.last_name,
+                        'email': comment.user.email
+                    },
+                    'content': comment.content,
+                    'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M')
+                }
+            )
+        return Response(comment_list)
